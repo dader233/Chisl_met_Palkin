@@ -1,5 +1,4 @@
-# -*- coding: utf-8 -*-
-# Лабораторная работа 1.5. QR-разложение и QR-алгоритм поиска собственных значений.
+# Лабораторная работа 1.5. QR-разложение и QR-алгоритм поиска собственных значений
 # Запуск: python 1_5_qr.py input_1_5.txt
 
 import sys
@@ -62,69 +61,42 @@ def mul(A, B):
 
 
 def qr(A):
-    # QR-разложение методом Хаусхолдера (отражений);
-    # комплексная арифметика нужна для комплексных сдвигов
     n = len(A)
-    R = [row[:] for row in A]
     Q = [[0j] * n for _ in range(n)]
+    R = [[0j] * n for _ in range(n)]
+
     for i in range(n):
-        Q[i][i] = 1.0 + 0j
+        for j in range(n):
+            Q[i][j] = A[i][j]
 
-    for k in range(n - 1):
-        # норма части столбца ниже диагонали
-        norm = 0.0
-        for i in range(k, n):
-            norm += abs(R[i][k]) ** 2
-        norm = math.sqrt(norm)
-        if norm == 0.0:
-            continue
-
-        # вектор отражения v = x - alpha*e1
-        x1 = R[k][k]
-        if abs(x1) == 0.0:
-            phase = 1.0 + 0j
-        else:
-            phase = x1 / abs(x1)
-        alpha = -phase * norm
-
-        v = [0j] * (n - k)
-        v[0] = x1 - alpha
-        for i in range(k + 1, n):
-            v[i - k] = R[i][k]
-
-        vv = 0.0
-        for z in v:
-            vv += abs(z) ** 2
-        if vv == 0.0:
-            continue
-
-        # R = H*R
-        for j in range(k, n):
-            s = 0j
-            for i in range(k, n):
-                s += v[i - k].conjugate() * R[i][j]
-            s *= 2.0 / vv
-            for i in range(k, n):
-                R[i][j] -= s * v[i - k]
-
-        # Q = Q*H
+    for j in range(n):
+        norm_sq = 0.0
         for i in range(n):
-            s = 0j
-            for j in range(k, n):
-                s += Q[i][j] * v[j - k]
-            s *= 2.0 / vv
-            for j in range(k, n):
-                Q[i][j] -= s * v[j - k].conjugate()
+            norm_sq += abs(Q[i][j]) ** 2
+        norm = math.sqrt(norm_sq)
+        
+        R[j][j] = norm + 0j
 
-        # ниже диагонали должны быть точные нули
-        for i in range(k + 1, n):
-            R[i][k] = 0j
+        if norm > 1e-14:
+            for i in range(n):
+                Q[i][j] /= norm
+        else:
+            for i in range(n):
+                Q[i][j] = 0j
+
+        for k in range(j + 1, n):
+            s = 0j
+            for i in range(n):
+                s += Q[i][j].conjugate() * Q[i][k]
+            R[j][k] = s
+            
+            for i in range(n):
+                Q[i][k] -= s * Q[i][j]
 
     return Q, R
 
 
 def shift(B, m):
-    # сдвиг Уилкинсона: берём ближайшее к B[m-1][m-1] собственное значение блока 2x2
     a = B[m - 2][m - 2]
     b = B[m - 2][m - 1]
     c = B[m - 1][m - 2]
@@ -140,7 +112,6 @@ def shift(B, m):
 
 
 def qr_algorithm(A, eps, max_it=10000):
-    # QR-алгоритм со сдвигом Уилкинсона и дефляцией
     B = [row[:] for row in A]
     m = len(B)
     values = []
@@ -151,7 +122,6 @@ def qr_algorithm(A, eps, max_it=10000):
             values.append(B[0][0])
             break
 
-        # максимальный по модулю элемент последней строки левее диагонали
         s1 = 0.0
         for j in range(m - 1):
             if abs(B[m - 1][j]) > s1:
@@ -231,10 +201,10 @@ def main():
     print("4. Найденные собственные значения")
     for i in range(len(values)):
         z = values[i]
-        # мнимая часть в пределах заданной точности считается нулевой
         if abs(z.imag) <= eps:
             z = z.real
         print("   lambda[%d] = %s" % (i, fmt(z)))
 
 
-main()
+if __name__ == "__main__":
+    main()

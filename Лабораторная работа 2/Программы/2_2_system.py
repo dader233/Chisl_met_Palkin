@@ -1,16 +1,12 @@
-# -*- coding: utf-8 -*-
 # Лабораторная работа 2.2. Метод простой итерации и метод Ньютона
-# для системы нелинейных уравнений (вариант 19, a = 1):
 #   x1^2 - 2*lg(x2) - 1 = 0
 #   x1^2 - a*x1*x2 + a = 0
-# Запуск: .venv\Scripts\python.exe 2_2_system.py input_2_2.txt
+# Запуск: "C:\Users\MialistaPC\Documents\Chisl_met_Palkin\.venv\scripts\python.exe" 2_2_equation.py input_2_2.txt
 
 import os
 import sys
 import math
 
-# В venv под Windows Tcl иногда не находит свои библиотеки;
-# указываем пути базового Python.
 if sys.prefix != sys.base_prefix:
     tcl_dir = os.path.join(sys.base_prefix, "tcl", "tcl8.6")
     tk_dir = os.path.join(sys.base_prefix, "tcl", "tk8.6")
@@ -43,12 +39,10 @@ def f2(x1, x2, a):
 
 
 def phi1(x2):
-    # из первого уравнения: x1 = sqrt(2*lg(x2) + 1)
     return math.sqrt(2.0 * math.log10(x2) + 1.0)
 
 
 def phi2(x1, a):
-    # из второго уравнения: x2 = (x1^2 + a)/(a*x1)
     return (x1 * x1 + a) / (a * x1)
 
 
@@ -142,7 +136,6 @@ def main():
 
     eps, a, x10, x20 = read_file(sys.argv[1])
 
-    # эталонное решение нужно только для оценки погрешности
     x1_ref, x2_ref, _, _ = newton(x10, x20, a, 1e-14)
 
     x1_s, x2_s, k_s, hist_s = simple_iteration(x10, x20, a, eps)

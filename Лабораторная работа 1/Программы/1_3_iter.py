@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Лабораторная работа 1.3. Метод простых итераций и метод Зейделя.
 # Запуск: python 1_3_iter.py input_1_3.txt
 
@@ -31,7 +30,7 @@ def read_file(path):
 
 
 def gauss(A, b):
-    # эталонное решение, чтобы было с чем сравнивать итерации
+    # гаусс для сравнения
     n = len(A)
     M = [A[i][:] + [b[i]] for i in range(n)]
 
@@ -95,7 +94,7 @@ def simple_iteration(A, b, eps):
 
 def seidel(A, b, eps):
     n = len(A)
-    # то же начальное приближение, что и в методе простых итераций
+    
     x = [b[i] / A[i][i] for i in range(n)]
     it = 0
 
